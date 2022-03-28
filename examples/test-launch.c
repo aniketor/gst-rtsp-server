@@ -61,7 +61,7 @@ main (int argc, char *argv[])
 
   /* create a server instance */
   server = gst_rtsp_server_new ();
-  g_object_set (server, "service", port, NULL);
+  g_object_set (server, "service", argv[1], NULL);
 
   /* get the mount points for this server, every server has a default object
    * that be used to map uri mount points to media factories */
@@ -72,12 +72,12 @@ main (int argc, char *argv[])
    * any launch line works as long as it contains elements named pay%d. Each
    * element with pay%d names will be a stream */
   factory = gst_rtsp_media_factory_new ();
-  gst_rtsp_media_factory_set_launch (factory, argv[1]);
+  gst_rtsp_media_factory_set_launch (factory, argv[3]);
   gst_rtsp_media_factory_set_shared (factory, TRUE);
   gst_rtsp_media_factory_set_enable_rtcp (factory, !disable_rtcp);
 
   /* attach the test factory to the /test url */
-  gst_rtsp_mount_points_add_factory (mounts, "/test", factory);
+  gst_rtsp_mount_points_add_factory (mounts, argv[2], factory);
 
   /* don't need the ref to the mapper anymore */
   g_object_unref (mounts);
@@ -86,7 +86,7 @@ main (int argc, char *argv[])
   gst_rtsp_server_attach (server, NULL);
 
   /* start serving */
-  g_print ("stream ready at rtsp://127.0.0.1:%s/test\n", port);
+  g_print ("stream ready at rtsp://127.0.0.1:%s%s\n", argv[1], argv[2]);
   g_main_loop_run (loop);
 
   return 0;
